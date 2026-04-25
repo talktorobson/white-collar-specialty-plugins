@@ -14,7 +14,7 @@ This plugin's `.mcp.json` is intentionally empty — all category placeholders r
 |----------|-------------|-------------|-------|
 | Calendar | `~~calendar` | Google Calendar (user-level Claude.ai connector) | |
 | Chat | `~~chat` | Slack (user-level Claude.ai connector) | |
-| Cloud storage | `~~cloud storage` | Google Drive (user-level Claude.ai connector) | Primary location for legal documents |
+| Cloud storage | `~~cloud storage` | Google Drive (user-level Claude.ai connector) | Primary location for legal documents. Native Google Docs, `.docx`, and text-layer PDF supported per [`GOOGLE-DOCS-WORKFLOW.md`](GOOGLE-DOCS-WORKFLOW.md) |
 | Email | `~~email` | Gmail (user-level Claude.ai connector) | |
 | Office suite | `~~office suite` | Google Workspace (via Drive) | |
 | Project tracker | `~~project tracker` | Atlassian / Jira (user-level Claude.ai connector) | ADEO context |

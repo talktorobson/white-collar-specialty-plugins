@@ -26,6 +26,7 @@ Rapidly triage incoming NDAs against standard screening criteria. Classify the N
 
 Accept the NDA in any format:
 - **File upload**: PDF, DOCX, or other document format
+- **Google Drive source**: a `docs.google.com` / `drive.google.com` URL, or a bare file name to resolve via search (native Google Docs, `.docx`, or text-layer PDFs in Drive). When the source is a Drive item, follow [`../../GOOGLE-DOCS-WORKFLOW.md`](../../GOOGLE-DOCS-WORKFLOW.md) for resolution + reading. **Output**: in addition to the markdown triage report in chat, create a new Google Doc as a sibling of the source named `<source name> — NDA Triage <YYYY-MM-DD>`.
 - **URL**: Link to the NDA in a document system
 - **Pasted text**: NDA text pasted directly
 

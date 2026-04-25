@@ -26,7 +26,8 @@ Review the contract: @$1
 
 Accept the contract in any of these formats:
 - **File upload**: PDF, DOCX, or other document format
-- **URL**: Link to a contract in your CLM, cloud storage (e.g., Box, Egnyte, SharePoint), or other document system
+- **Google Drive source**: a `docs.google.com` / `drive.google.com` URL, or a bare file name to resolve via search (native Google Docs, `.docx`, or text-layer PDFs in Drive). When the source is a Drive item, follow [`../../GOOGLE-DOCS-WORKFLOW.md`](../../GOOGLE-DOCS-WORKFLOW.md) for resolution + reading. **Output**: in addition to the markdown report in chat, create a new Google Doc as a sibling of the source named `<source name> — Legal Review <YYYY-MM-DD>`.
+- **URL**: Link to a contract in your CLM or other document system
 - **Pasted text**: Contract text pasted directly into the conversation
 
 If no contract is provided, prompt the user to supply one.
