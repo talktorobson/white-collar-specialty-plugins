@@ -32,6 +32,12 @@ If `pandoc` is missing, the skill should stop and tell the user to run `brew ins
    ```
    Pandoc maps GitHub-flavored markdown to Word styles: `# / ## / ###` → Heading 1/2/3, `**` → bold, tables → real Word tables, code fences → preformatted blocks.
 
+2a. **Clean the .docx** (required) — strip the empty `comments.xml` and unused footnote-rels that pandoc emits, which cause Word to show "Word found unreadable content. Do you want to recover...":
+   ```
+   <repo-root>/scripts/clean-pandoc-docx.sh /tmp/<skill-slug>-out-<ts>.docx
+   ```
+   This rewrites the file in place. The script depends on `python3` and `unzip`/`zip` (all macOS defaults).
+
 3. **Read the .docx as base64**:
    ```
    base64 -i /tmp/<skill-slug>-out-<ts>.docx | tr -d '\n'

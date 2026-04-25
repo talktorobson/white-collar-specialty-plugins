@@ -58,6 +58,10 @@ The standard output for legal skills is a `.docx` file in Drive, produced via `p
      -o /tmp/<skill-slug>-out-<ts>.docx \
      /tmp/<skill-slug>-out-<ts>.md
    ```
+2a. Strip pandoc's empty `comments.xml` and unused footnote-rels (or Word will show *"Word found unreadable content"* on open):
+   ```
+   <repo-root>/scripts/clean-pandoc-docx.sh /tmp/<skill-slug>-out-<ts>.docx
+   ```
 3. Read the `.docx` as base64:
    ```
    base64 -i /tmp/<skill-slug>-out-<ts>.docx | tr -d '\n'
