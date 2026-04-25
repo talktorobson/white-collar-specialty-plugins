@@ -33,14 +33,44 @@ After the skill produces its markdown report:
    - `name` (source file name, without trailing extension)
    - `parents[0]` (folder ID where the source lives)
 2. Build the output Doc name using the skill's template (see "Naming conventions" below). Use today's date in `YYYY-MM-DD` format.
-3. Convert the markdown report to a `.docx` and upload it per [`../MARKDOWN-TO-GDOC.md`](../MARKDOWN-TO-GDOC.md). Pass:
+3. Run the markdown → `.docx` → upload pipeline (detailed in "Markdown to Google Docs pipeline" below). Output target:
    - `title` = output Doc name from step 2
    - `parentId` = the folder ID from step 1
-   - `mimeType` = `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
-   - `content` = base64 of the `.docx` produced by `pandoc`
 4. Return both:
    - The full markdown report inline in chat (so the conversation has the full record)
    - The new Doc's URL ("Saved to: https://docs.google.com/document/d/<NEW_ID>")
+
+## Markdown to Google Docs pipeline
+
+This produces a native Google Doc with real headings, bold, tables, and code blocks (rather than escaped markdown characters as plain text).
+
+**Dependencies**: `pandoc` (system, install once with `brew install pandoc`). If missing, stop and tell the user to install it — do not fall back to `text/plain` upload, which produces escape-character output.
+
+**Steps**:
+
+1. Write the skill's markdown report to a temp file:
+   ```
+   /tmp/<skill-slug>-out-<YYYYMMDD-HHMMSS>.md
+   ```
+2. Convert to `.docx`:
+   ```
+   pandoc -f markdown -t docx \
+     -o /tmp/<skill-slug>-out-<ts>.docx \
+     /tmp/<skill-slug>-out-<ts>.md
+   ```
+3. Read the `.docx` as base64:
+   ```
+   base64 -i /tmp/<skill-slug>-out-<ts>.docx | tr -d '\n'
+   ```
+4. Upload via `mcp__claude_ai_Google_Drive__create_file` with:
+   - `title` = output Doc name (from step 2 of the parent flow)
+   - `mimeType` = `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+   - `parentId` = source's parent folder ID
+   - `content` = base64 from step 3
+   - Leave `disableConversionToGoogleType` at default (false) so Drive converts the `.docx` into a native Google Doc.
+5. Delete the temp `.md` and `.docx` files after upload succeeds. Leave them in place if the upload fails (so the user can recover).
+
+This same pipeline is documented at the repo root in [`MARKDOWN-TO-GDOC.md`](https://github.com/talktorobson/white-collar-specialty-plugins/blob/customize/legal-robson/MARKDOWN-TO-GDOC.md) for cross-plugin reuse — that doc also covers an HTML fallback path for environments where pandoc is genuinely unavailable.
 
 ## Naming conventions
 
