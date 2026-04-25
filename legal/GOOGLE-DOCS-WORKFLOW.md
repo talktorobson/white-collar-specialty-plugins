@@ -40,9 +40,9 @@ After the skill produces its markdown report:
    - The full markdown report inline in chat (so the conversation has the full record)
    - The new Doc's URL ("Saved to: https://docs.google.com/document/d/<NEW_ID>")
 
-## Markdown to Google Docs pipeline
+## Markdown to `.docx` pipeline (standard output format)
 
-This produces a native Google Doc with real headings, bold, tables, and code blocks (rather than escaped markdown characters as plain text).
+The standard output for legal skills is a `.docx` file in Drive, produced via `pandoc`. This gives full headings, bold, tables, and code blocks. Drive previews `.docx` inline with full formatting and offers one-click "Open with Google Docs" for native editing.
 
 **Dependencies**: `pandoc` (system, install once with `brew install pandoc`). If missing, stop and tell the user to install it — do not fall back to `text/plain` upload, which produces escape-character output.
 
@@ -69,15 +69,9 @@ This produces a native Google Doc with real headings, bold, tables, and code blo
    - `content` = base64 from step 3
 5. Delete the temp `.md` and `.docx` files after upload succeeds. Leave them in place if the upload fails (so the user can recover).
 
-### Output is a `.docx` file, not a native Google Doc
+When returning the URL, briefly tell the user: *"Saved as `<name>.docx`. Drive renders it inline; click 'Open with Google Docs' for native editing."*
 
-The Claude.ai Drive MCP's `create_file` only auto-converts `text/plain` and `text/csv` to native Google formats — `.docx` uploads stay as Word documents. **This is fine**: the `.docx` lives in Drive, renders correctly in Drive preview (real headings, bold, tables), and opens natively with one click ("Open with Google Docs"). For most workflows this is functionally identical to a native Google Doc.
-
-When telling the user the output URL, briefly note: *"Saved as `<name>.docx` — click 'Open with Google Docs' in Drive for native editing, or right-click → Open With → Google Docs to create a native copy."*
-
-If the workflow strictly requires a native `application/vnd.google-apps.document`, the only path is a custom MCP server wrapping the Google Docs API (`documents.batchUpdate` with `insertText` + `updateTextStyle`). That is out of scope for this workflow doc — see the deferred items in the repo plan.
-
-This same pipeline is documented at the repo root in [`MARKDOWN-TO-GDOC.md`](https://github.com/talktorobson/white-collar-specialty-plugins/blob/customize/legal-robson/MARKDOWN-TO-GDOC.md) for cross-plugin reuse.
+The same pipeline applies to all plugins in this fork — see the repo-root [`MARKDOWN-TO-GDOC.md`](https://github.com/talktorobson/white-collar-specialty-plugins/blob/customize/legal-robson/MARKDOWN-TO-GDOC.md) for cross-plugin documentation. A native gdoc output (`application/vnd.google-apps.document`) would require a custom MCP server wrapping the Google Docs API — deferred.
 
 ## Naming conventions
 

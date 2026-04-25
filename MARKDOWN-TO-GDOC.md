@@ -1,12 +1,14 @@
-# Markdown → Google Docs (shared workflow)
+# Markdown → `.docx` in Google Drive (shared workflow)
 
-Pipeline used by any plugin in this fork that produces a structured markdown report and wants to publish it to Google Drive as a **native Google Doc** with real headings, bold, tables, and code blocks.
+Standard output pipeline for any plugin in this fork that produces a structured markdown report. The output is **always a `.docx` file** in Google Drive — full headings, bold, tables, and code blocks render correctly. Drive previews it inline and exposes one-click "Open with Google Docs" for native editing.
+
+This is the canonical format for all knowledge-work outputs in this fork. **Do not** upload as `text/plain` (markdown chars stay literal) or `text/html` (renders as raw HTML).
 
 ## When to use
 
 - A skill emits a structured markdown report (legal review, NDA triage, finance reconciliation, marketing brief, etc.).
-- The user works in Google Drive and wants the output as a Google Doc, not a `.md` file or escaped plaintext.
-- The destination is a new Doc — this pipeline does **not** edit existing Docs in place.
+- The user works in Google Drive and wants the output as a usable document.
+- The destination is a new file — this pipeline does **not** edit existing Docs in place.
 
 ## Dependencies
 
@@ -41,21 +43,19 @@ If `pandoc` is missing, the skill should stop and tell the user to run `brew ins
    - `parentId` = source's parent folder ID (from `get_file_metadata` on the source)
    - `content` = base64 string from step 3
 
-5. **Return the new file's URL** to the user, plus the same markdown report inline in chat (so the conversation has the full record without needing to open Drive). Mention that the output is a `.docx` that opens natively with Google Docs in one click.
+5. **Return the new file's URL** to the user, plus the same markdown report inline in chat (so the conversation has the full record without needing to open Drive). Note that the output is a `.docx` — Drive renders it inline and "Open with Google Docs" is one click.
 
-### The output is a `.docx`, not a native Google Doc — and that's fine
+## Why `.docx` and not native Google Doc
 
-The Claude.ai Drive MCP's `create_file` only auto-converts `text/plain` and `text/csv` to native Google formats. `.docx`, `.html`, and other rich formats stay in their native form on upload. We tested all three:
+The Claude.ai Drive MCP's `create_file` only auto-converts `text/plain` and `text/csv` to native Google formats. `.docx` and `.html` uploads stay in their original form on upload (verified empirically). The `.docx` path is the highest-fidelity output the MCP can produce:
 
-| Upload format | Result | Renders correctly? |
+| Upload format | Result | Verdict |
 |---|---|---|
-| `text/plain` (raw markdown) | Converted to native gdoc | ❌ Markdown characters escaped (`\#`, `\*\*`) |
-| `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (pandoc-built `.docx`) | Stored as `.docx` | ✅ Full headings, bold, tables |
-| `text/html` (pandoc-built HTML) | Stored as `.html` | ⚠️ Renders as raw HTML, not a doc |
+| `text/plain` (raw markdown) | Converted to native gdoc | ❌ Markdown characters escaped (`\#`, `\*\*`) — unusable |
+| **`.docx` (pandoc-built)** | **Stored as `.docx`** | **✅ Full headings, bold, tables — STANDARD** |
+| `text/html` (pandoc-built) | Stored as `.html` | ⚠️ Drive renders as raw HTML, not a doc |
 
-The `.docx` path wins on fidelity. Output is a `.docx` rather than a native gdoc, but: Drive shows it in folders, previews it inline with full formatting, and exposes a one-click "Open with Google Docs" action that creates a native copy. For most workflows this is functionally identical to native gdoc output.
-
-If a workflow strictly requires `application/vnd.google-apps.document` (e.g. downstream automation filters by mime type), the only viable path is a custom MCP server wrapping the Google Docs API (`documents.batchUpdate` with `insertText` + `updateTextStyle`). That is out of scope for this workflow doc.
+A native `application/vnd.google-apps.document` output would require a custom MCP server wrapping the Google Docs API (`documents.batchUpdate` with `insertText` + `updateTextStyle`) — deferred.
 
 ## Naming conventions
 
