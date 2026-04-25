@@ -40,9 +40,22 @@ If `pandoc` is missing, the skill should stop and tell the user to run `brew ins
    - `mimeType` = `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
    - `parentId` = source's parent folder ID (from `get_file_metadata` on the source)
    - `content` = base64 string from step 3
-   - Leave `disableConversionToGoogleType` at default (false) → Drive auto-converts the `.docx` into a native Google Doc with real structure.
 
-5. **Return the new Doc's URL** to the user, plus the same markdown report inline in chat (so the conversation has the full record without needing to open Drive).
+5. **Return the new file's URL** to the user, plus the same markdown report inline in chat (so the conversation has the full record without needing to open Drive). Mention that the output is a `.docx` that opens natively with Google Docs in one click.
+
+### The output is a `.docx`, not a native Google Doc — and that's fine
+
+The Claude.ai Drive MCP's `create_file` only auto-converts `text/plain` and `text/csv` to native Google formats. `.docx`, `.html`, and other rich formats stay in their native form on upload. We tested all three:
+
+| Upload format | Result | Renders correctly? |
+|---|---|---|
+| `text/plain` (raw markdown) | Converted to native gdoc | ❌ Markdown characters escaped (`\#`, `\*\*`) |
+| `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (pandoc-built `.docx`) | Stored as `.docx` | ✅ Full headings, bold, tables |
+| `text/html` (pandoc-built HTML) | Stored as `.html` | ⚠️ Renders as raw HTML, not a doc |
+
+The `.docx` path wins on fidelity. Output is a `.docx` rather than a native gdoc, but: Drive shows it in folders, previews it inline with full formatting, and exposes a one-click "Open with Google Docs" action that creates a native copy. For most workflows this is functionally identical to native gdoc output.
+
+If a workflow strictly requires `application/vnd.google-apps.document` (e.g. downstream automation filters by mime type), the only viable path is a custom MCP server wrapping the Google Docs API (`documents.batchUpdate` with `insertText` + `updateTextStyle`). That is out of scope for this workflow doc.
 
 ## Naming conventions
 

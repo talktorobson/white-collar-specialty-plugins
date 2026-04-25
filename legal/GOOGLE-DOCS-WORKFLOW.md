@@ -67,10 +67,17 @@ This produces a native Google Doc with real headings, bold, tables, and code blo
    - `mimeType` = `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
    - `parentId` = source's parent folder ID
    - `content` = base64 from step 3
-   - Leave `disableConversionToGoogleType` at default (false) so Drive converts the `.docx` into a native Google Doc.
 5. Delete the temp `.md` and `.docx` files after upload succeeds. Leave them in place if the upload fails (so the user can recover).
 
-This same pipeline is documented at the repo root in [`MARKDOWN-TO-GDOC.md`](https://github.com/talktorobson/white-collar-specialty-plugins/blob/customize/legal-robson/MARKDOWN-TO-GDOC.md) for cross-plugin reuse — that doc also covers an HTML fallback path for environments where pandoc is genuinely unavailable.
+### Output is a `.docx` file, not a native Google Doc
+
+The Claude.ai Drive MCP's `create_file` only auto-converts `text/plain` and `text/csv` to native Google formats — `.docx` uploads stay as Word documents. **This is fine**: the `.docx` lives in Drive, renders correctly in Drive preview (real headings, bold, tables), and opens natively with one click ("Open with Google Docs"). For most workflows this is functionally identical to a native Google Doc.
+
+When telling the user the output URL, briefly note: *"Saved as `<name>.docx` — click 'Open with Google Docs' in Drive for native editing, or right-click → Open With → Google Docs to create a native copy."*
+
+If the workflow strictly requires a native `application/vnd.google-apps.document`, the only path is a custom MCP server wrapping the Google Docs API (`documents.batchUpdate` with `insertText` + `updateTextStyle`). That is out of scope for this workflow doc — see the deferred items in the repo plan.
+
+This same pipeline is documented at the repo root in [`MARKDOWN-TO-GDOC.md`](https://github.com/talktorobson/white-collar-specialty-plugins/blob/customize/legal-robson/MARKDOWN-TO-GDOC.md) for cross-plugin reuse.
 
 ## Naming conventions
 
