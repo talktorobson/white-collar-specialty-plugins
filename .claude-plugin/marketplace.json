@@ -1,7 +1,7 @@
 {
-  "name": "knowledge-work-plugins",
+  "name": "robson-knowledge-work-plugins",
   "owner": {
-    "name": "Anthropic"
+    "name": "Robson B D Reis"
   },
   "plugins": [
     {
