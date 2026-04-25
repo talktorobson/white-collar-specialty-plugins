@@ -33,11 +33,11 @@ After the skill produces its markdown report:
    - `name` (source file name, without trailing extension)
    - `parents[0]` (folder ID where the source lives)
 2. Build the output Doc name using the skill's template (see "Naming conventions" below). Use today's date in `YYYY-MM-DD` format.
-3. Call `mcp__claude_ai_Google_Drive__create_file` with:
-   - `name` = output Doc name
-   - `mime_type` = `application/vnd.google-apps.document`
-   - `parents` = `[<source folder ID>]`
-   - `content` = the markdown report from the skill
+3. Convert the markdown report to a `.docx` and upload it per [`../MARKDOWN-TO-GDOC.md`](../MARKDOWN-TO-GDOC.md). Pass:
+   - `title` = output Doc name from step 2
+   - `parentId` = the folder ID from step 1
+   - `mimeType` = `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+   - `content` = base64 of the `.docx` produced by `pandoc`
 4. Return both:
    - The full markdown report inline in chat (so the conversation has the full record)
    - The new Doc's URL ("Saved to: https://docs.google.com/document/d/<NEW_ID>")
@@ -56,15 +56,8 @@ Strip any extension (`.docx`, `.pdf`) from `<source name>` when building the out
 ## Limitations
 
 - **No in-place edits.** The current Drive MCP exposes no update/append/comment/suggestion tools. Reviews always go in a new Doc; the source is never modified.
-- **Markdown rendering.** When `create_file` writes markdown into a Google Doc, headings and bold should render as Doc structure. If they appear as raw `#` and `**` characters, the workaround is documented under "Markdown rendering caveat" below.
 - **Scanned PDFs** must be OCRed before invoking the skill.
-
-## Markdown rendering caveat
-
-If `create_file` deposits markdown as literal text rather than structured Doc content, two options:
-
-1. Save the file as `mime_type=text/markdown` (kept as a text file in Drive — not ideal, since it won't open in Docs).
-2. Build a follow-up step that converts the markdown to Docs API requests (`insertText` + `updateTextStyle` for headings/bold). This is deferred until smoke-testing confirms it's needed.
+- **`pandoc` required** for the markdown → Doc conversion. If missing, stop and tell the user to run `brew install pandoc` rather than fall back to the lower-fidelity `text/plain` upload (which produces escape-character output).
 
 ## Falling back when no Drive source is given
 
